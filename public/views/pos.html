@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>POS Terminal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/styles.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container-fluid">
+            <span class="navbar-brand">Cashier Terminal</span>
+            <button class="btn btn-outline-danger btn-sm" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Products -->
+            <div class="col-md-7">
+                <input type="text" id="search-input" class="form-control mb-3" placeholder="Search by name or barcode...">
+                <div class="row" id="product-list"></div>
+            </div>
+            
+            <!-- Product Cart -->
+            <div class="col-md-5">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">Current Sale</div>
+                    <div class="card-body cart-container">
+                        <table class="table">
+                            <thead>
+                                <tr><th>Item</th><th>Qty</th><th>Subtotal</th><th></th></tr>
+                            </thead>
+                            <tbody id="cart-body"></tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer">
+                        <h4>Total: Rs.<span id="grand-total">0.00</span></h4>
+                        <button class="btn btn-success w-100 btn-lg" onclick="checkout()">CHECKOUT</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receipt Modal -->
+    <div class="modal fade" id="receiptModal" tabindex="-1">
+    <div class="modal-dialog modal-sm"> <div class="modal-content">
+            <div class="modal-body p-4" id="receipt-body">
+                </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success w-100" onclick="window.print()">Print Receipt</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/pos.js"></script>
+    <script>async function logout() { await API.post('/auth/logout'); window.location.href = '/'; }</script>
+</body>
+</html> 

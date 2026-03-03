@@ -1,0 +1,54 @@
+        body {
+            min-height: 100vh;
+            background-color: #f8f9fa;
+        }
+
+        .login-card {
+            border-radius: 12px;
+        }
+
+        @media (max-width: 576px) {
+            .login-card {
+                margin: 10px;
+            }
+        }
+
+        .sidebar {
+            min-width: 250px;
+            height: 100vh;
+            background: #212529;
+            color: white;
+            position: fixed;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, .75);
+        }
+
+        .nav-link.active {
+            color: white;
+            background: #0d6efd !important;
+        }
+
+        .product-card {
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .product-card:hover {
+            transform: scale(1.02);
+        }
+
+        .cart-container {
+            height: 70vh;
+            overflow-y: auto;
+        }
+
+        #product-list .col-md-4:nth-child(even) .card {
+    background-color: #e9ecef !important;
+        }
