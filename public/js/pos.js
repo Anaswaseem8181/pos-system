@@ -19,7 +19,7 @@ function renderProductList(list) {
     const container = document.getElementById('product-list');
     
     container.innerHTML = list.map((p, index) => {
-        const bgColor = index % 2 === 0 ? 'bg-danger  text-white' : 'bg-white'; 
+        const bgColor = index % 2 === 0 ? 'bg-light' : 'bg-white'; 
         return `
         <div class="col-md-4 mb-3">
             <div class="card product-card ${bgColor} ${p.quantity <= 0 ? 'opacity-50' : ''}" 
