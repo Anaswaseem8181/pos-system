@@ -1,203 +1,474 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Admin Dashboard - POS System</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../css/styles.css" rel="stylesheet">
+	<meta charset="UTF-8">
+	<title>Admin Dashboard - POS System</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+	<link href="../css/styles.css" rel="stylesheet">
+	<link href="../css/pos-custom.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
+
 <body>
 
-<div class="d-flex">
-    <!-- Sidebar -->
-    <div class="sidebar d-flex flex-column p-3">
-        <h4>POS Admin</h4>
-        <hr>
-        <ul class="nav nav-pills flex-column mb-auto" id="adminTabs" role="tablist">
-            <li class="nav-item">
-                <button class="text-black nav-link active w-100 text-start" id="inventory-tab" data-bs-toggle="tab" data-bs-target="#inventory" type="button">Inventory</button>
-            </li>
-            <li class="nav-item">
-                <button class="text-black nav-link w-100 text-start" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button">Users</button>
-            </li>
-            <li class="nav-item">
-                <button class="text-black nav-link w-100 text-start" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports" type="button">Sales Reports</button>
-            </li>
-        </ul>
-        <hr>
-        <button class="btn btn-danger w-100" id="logout-btn">Logout</button>
-    </div>
+	<!-- Top Navbar -->
+	<nav class="navbar navbar-light bg-white border-bottom sticky-top">
+		<div class="container-fluid">
+			<div class="d-flex align-items-center">
+				<button id="menu-toggle" class="me-3">
+					<i class="bi bi-list"></i>
+				</button>
+				<span class="navbar-brand mb-0 h1">Progressive POS</span>
+			</div>
+		</div>
+	</nav>
 
-    <!-- Main Content -->
-    <div class="main-content w-100">
-        <div class="tab-content" id="adminTabContent">
-            
-            <!-- Inventory Section -->
-            <div class="tab-pane fade show active" id="inventory" role="tabpanel">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2>Inventory Management</h2>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">+ Add Product</button>
-                </div>
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Barcode</th>
-                                    <th>Name</th>
-                                    <th>Category</th>
-                                    <th>Price</th>
-                                    <th>Stock</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="inventory-table"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+	<div class="d-flex">
+		<!-- Sidebar -->
+		<div class="sidebar d-flex flex-column" id="sidebar">
+			<div class="py-3 px-4">
+				<h5 id="sidebar-title" class="mb-0 text-muted small text-uppercase fw-bold">Admin Panel</h5>
+			</div>
 
-            <!-- Users Section -->
-            <div class="tab-pane fade" id="users" role="tabpanel">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2>User Accounts</h2>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">+ Add New User</button>
-                </div>
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Username</th>
-                                    <th>Role</th>
-                                </tr>
-                            </thead>
-                            <tbody id="users-table"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+			<ul class="nav nav-pills flex-column mb-auto" id="adminTabs" role="tablist">
+				<li class="nav-item">
+					<button class="nav-link active w-100 d-flex align-items-center" id="inventory-tab" data-bs-toggle="tab"
+						data-bs-target="#inventory" type="button">
+						<i class="bi bi-box-seam me-2"></i>
+						<span class="nav-text">Inventory</span>
+						<span id="sidebar-low-stock-count" class="badge bg-danger rounded-pill ms-auto d-none">0</span>
+					</button>
+				</li>
+				<li class="nav-item">
+					<button class="nav-link w-100" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button">
+						<i class="bi bi-people"></i>
+						<span class="nav-text">Users</span>
+					</button>
+				</li>
+				<li class="nav-item">
+					<button class="nav-link w-100" id="categories-tab" data-bs-toggle="tab" data-bs-target="#categories"
+						type="button">
+						<i class="bi bi-tags"></i>
+						<span class="nav-text">Categories</span>
+					</button>
+				</li>
+				<li class="nav-item">
+					<button class="nav-link w-100" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports" type="button">
+						<i class="bi bi-graph-up"></i>
+						<span class="nav-text">Reports</span>
+					</button>
+				</li>
+				<li class="nav-item mt-2">
+					<a href="/pos" class="nav-link">
+						<i class="bi bi-cart3 text-primary"></i>
+						<span class="nav-text fw-bold">POS Terminal</span>
+					</a>
+				</li>
+			</ul>
 
-            <!-- Reports Section -->
-            <div class="tab-pane fade" id="reports" role="tabpanel">
-                <h2 class="mb-4">Sales Performance</h2>
-                <div class="row mb-4">
-                    <div class="col-md-4">
-                        <div class="card bg-secondary text-white">
-                            <div class="card-body text-center">
-                                <h6>Total Revenue</h6>
-                                <h3 id="stat-revenue">$0.00</h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card bg-light text-black">
-                            <div class="card-body text-center">
-                                <h6>Total Transactions</h6>
-                                <h3 id="stat-count">0</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Cashier</th>
-                                    <th>Total Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody id="sales-table"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+			<div class="sidebar-footer">
+				<button class="btn btn-outline-danger w-100 btn-logout" id="logout-btn">
+					<i class="bi bi-box-arrow-right"></i>
+					<span>Logout</span>
+				</button>
+			</div>
+		</div>
 
-        </div>
-    </div>
-</div>
+		<!-- Main Content -->
+		<div class="main-content w-100">
+			<div class="tab-content" id="adminTabContent">
 
-<!-- Modal: Add Product -->
-<div class="modal fade" id="addProductModal" tabindex="-1">
-    <div class="modal-dialog">
-        <form id="add-product-form" class="modal-content">
-            <div class="modal-header"><h5 class="modal-title">New Product</h5></div>
-            <div class="modal-body">
-                <input type="text" id="p-name" class="form-control mb-2" placeholder="Product Name" required>
-                <input type="text" id="p-barcode" class="form-control mb-2" placeholder="Barcode" required>
-                <input type="text" id="p-category" class="form-control mb-2" placeholder="Category">
-                <input type="number" id="p-price" step="0.01" class="form-control mb-2" placeholder="Price" required>
-                <input type="number" id="p-qty" class="form-control mb-2" placeholder="Initial Stock" required>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-primary">Save Product</button>
-            </div>
-        </form>
-    </div>
-</div>
+				<!-- Inventory Section -->
+				<div class="tab-pane fade show active" id="inventory" role="tabpanel">
+					<div class="d-flex justify-content-between align-items-center mb-4">
+						<h2>Inventory Management</h2>
+						<div class="d-flex gap-2">
+							<button class="btn btn-outline-secondary" onclick="exportInventory()">
+								<i class="bi bi-printer"></i> Export Report
+							</button>
+							<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">+
+								Add
+								Product</button>
+						</div>
+					</div>
+					<div class="card shadow-sm">
+						<div class="card-body">
+							<table class="table table-hover">
+								<thead>
+									<tr>
+										<th>Barcode</th>
+										<th>Name</th>
+										<th>Category</th>
+										<th>Price</th>
+										<th>Stock</th>
+										<th>Status</th>
+										<th>Actions</th>
+									</tr>
+								</thead>
+								<tbody id="inventory-table"></tbody>
+							</table>
+						</div>
+					</div>
+				</div>
 
-<!-- Modal: Edit Product -->
-<div class="modal fade" id="editProductModal" tabindex="-1">
-    <div class="modal-dialog">
-        <form id="edit-product-form" class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Edit Product</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="edit-p-id">
-                
-                <label class="form-label">Product Name</label>
-                <input type="text" id="edit-p-name" class="form-control mb-2" required>
-                
-                <label class="form-label">Barcode</label>
-                <input type="text" id="edit-p-barcode" class="form-control mb-2" required>
-                
-                <label class="form-label">Category</label>
-                <input type="text" id="edit-p-category" class="form-control mb-2">
-                
-                <label class="form-label">Price (PKR)</label>
-                <input type="number" id="edit-p-price" step="0.01" class="form-control mb-2" required>
-                
-                <label class="form-label">Current Stock</label>
-                <input type="number" id="edit-p-qty" class="form-control mb-2" required>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-success">Update Product</button>
-            </div>
-        </form>
-    </div>
-</div>
+				<!-- Users Section -->
+				<div class="tab-pane fade" id="users" role="tabpanel">
+					<div class="d-flex justify-content-between align-items-center mb-4">
+						<h2>User Accounts</h2>
+						<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">+ Add New
+							User</button>
+					</div>
+					<div class="card shadow-sm">
+						<div class="card-body">
+							<table class="table table-hover">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>Username</th>
+										<th>Role</th>
+										<th>Status</th>
+										<th>Actions</th>
+									</tr>
+								</thead>
+								<tbody id="users-table"></tbody>
+							</table>
+						</div>
+					</div>
+				</div>
 
-<!-- Modal: Add User -->
-<div class="modal fade" id="addUserModal" tabindex="-1">
-    <div class="modal-dialog">
-        <form id="add-user-form" class="modal-content">
-            <div class="modal-header"><h5 class="modal-title">New User Account</h5></div>
-            <div class="modal-body">
-                <input type="text" id="u-name" class="form-control mb-2" placeholder="Username" required>
-                <input type="password" id="u-pass" class="form-control mb-2" placeholder="Password" required>
-                <select id="u-role" class="form-select mb-2">
-                    <option value="CASHIER">CASHIER</option>
-                    <option value="ADMIN">ADMIN</option>
-                </select>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-primary">Create User</button>
-            </div>
-        </form>
-    </div>
-</div>
+				<!-- Categories Section -->
+				<div class="tab-pane fade" id="categories" role="tabpanel">
+					<div class="d-flex justify-content-between align-items-center mb-4">
+						<h2>Product Categories</h2>
+						<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">+ Add
+							Category</button>
+					</div>
+					<div class="card shadow-sm">
+						<div class="card-body">
+							<table class="table table-hover">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>Category Name</th>
+										<th>Actions</th>
+									</tr>
+								</thead>
+								<tbody id="categories-table"></tbody>
+							</table>
+						</div>
+					</div>
+				</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="../js/api.js"></script>
-<script src="../js/inventory.js"></script>
-<script src="../js/users.js"></script>
+				<!-- Reports Section -->
+				<div class="tab-pane fade" id="reports" role="tabpanel">
+					<div class="d-flex justify-content-between align-items-center mb-4">
+						<h2 class="mb-0">Sales Performance</h2>
+						<div class="d-flex gap-2 align-items-center bg-white p-2 rounded shadow-sm">
+							<small class="text-muted fw-bold">Period:</small>
+							<input type="date" id="report-start" class="form-control form-control-sm border-0">
+							<span class="text-muted">to</span>
+							<input type="date" id="report-end" class="form-control form-control-sm border-0">
+							<button class="btn btn-sm btn-primary px-3" onclick="loadReports()">
+								<i class="bi bi-filter"></i>
+							</button>
+						</div>
+					</div>
+
+					<div class="row mb-4">
+						<div class="col-md-4">
+							<div class="card bg-primary text-white border-0 shadow-sm">
+								<div class="card-body text-center">
+									<h6 class="opacity-75">Total Revenue</h6>
+									<h3 id="stat-revenue" class="fw-bold">Rs. 0</h3>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="card bg-white text-dark border-0 shadow-sm">
+								<div class="card-body text-center">
+									<h6 class="text-muted">Total Transactions</h6>
+									<h3 id="stat-count" class="fw-bold">0</h3>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="card bg-info text-white border-0 shadow-sm">
+								<div class="card-body text-center">
+									<h6 class="opacity-75">Inventory Value</h6>
+									<h3 id="stat-inventory-value" class="fw-bold">Rs. 0</h3>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="card bg-danger text-white border-0 shadow-sm">
+								<div class="card-body text-center">
+									<h6 class="opacity-75">Low Stock Items</h6>
+									<h3 id="stat-low-stock" class="fw-bold">0</h3>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-lg-8">
+							<div class="card border-0 shadow-sm">
+								<div class="card-header bg-white fw-bold">Recent Sales</div>
+								<div class="card-body p-0">
+									<table class="table mb-0">
+										<thead class="table-light">
+											<tr>
+												<th>Date</th>
+												<th>Customer</th>
+												<th>Cashier</th>
+												<th class="text-end">Total</th>
+												<th class="text-end">Actions</th>
+											</tr>
+										</thead>
+										<tbody id="sales-table"></tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-4">
+							<div class="card border-0 shadow-sm mb-4">
+								<div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
+									<span>Top Selling Items</span>
+								</div>
+								<div class="card-body p-0">
+									<table class="table table-sm mb-0">
+										<thead class="table-light small">
+											<tr>
+												<th>Product</th>
+												<th class="text-end">Sold</th>
+												<th class="text-end">Revenue</th>
+											</tr>
+										</thead>
+										<tbody id="top-selling-table" class="small">
+											<!-- Top products will be injected here -->
+										</tbody>
+									</table>
+								</div>
+							</div>
+
+							<div class="card border-0 shadow-sm">
+								<div class="card-header bg-white fw-bold text-danger">Low Stock Items</div>
+								<div class="card-body p-0">
+									<ul class="list-group list-group-flush" id="low-stock-list">
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal: Add Product -->
+	<div class="modal fade" id="addProductModal" tabindex="-1">
+		<div class="modal-dialog">
+			<form id="add-product-form" class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">New Product</h5>
+				</div>
+				<div class="modal-body">
+					<input type="text" id="p-name" class="form-control mb-2" placeholder="Product Name" required>
+					<input type="text" id="p-barcode" class="form-control mb-2" placeholder="Barcode" required>
+					<select id="p-category" class="form-select mb-2" required>
+						<option value="">Select Category</option>
+					</select>
+					<input type="number" id="p-price" class="form-control mb-2" placeholder="Price" step="0.01" required>
+					<input type="number" id="p-qty" class="form-control mb-2" placeholder="Initial Quantity" required>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+					<button type="submit" class="btn btn-primary">Save Product</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Modal: Add Category -->
+	<div class="modal fade" id="addCategoryModal" tabindex="-1">
+		<div class="modal-dialog">
+			<form id="add-category-form" class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">New Category</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body">
+					<input type="text" id="cat-name" class="form-control" placeholder="Category Name" required>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+					<button type="submit" class="btn btn-primary">Save Category</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Modal: Edit Product -->
+	<div class="modal fade" id="editProductModal" tabindex="-1">
+		<div class="modal-dialog">
+			<form id="edit-product-form" class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Edit Product</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body">
+					<input type="hidden" id="edit-p-id">
+
+					<label class="form-label">Product Name</label>
+					<input type="text" id="edit-p-name" class="form-control mb-2" required>
+
+					<label class="form-label">Barcode</label>
+					<input type="text" id="edit-p-barcode" class="form-control mb-2" required>
+
+					<label class="form-label">Category</label>
+					<select id="edit-p-category" class="form-select mb-2" required>
+						<option value="">Select Category</option>
+					</select>
+
+					<label class="form-label">Price (PKR)</label>
+					<input type="number" id="edit-p-price" step="0.01" class="form-control mb-2" required>
+
+					<label class="form-label">Current Stock</label>
+					<input type="number" id="edit-p-qty" class="form-control mb-2" required>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+					<button type="submit" class="btn btn-success">Update Product</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Modal: Add User -->
+	<div class="modal fade" id="addUserModal" tabindex="-1">
+		<div class="modal-dialog">
+			<form id="add-user-form" class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">New User Account</h5>
+				</div>
+				<div class="modal-body">
+					<input type="text" id="u-name" class="form-control mb-2" placeholder="Username" required>
+					<div class="input-group mb-2">
+						<input type="password" id="u-pass" class="form-control" placeholder="Password" required>
+						<button class="btn btn-outline-secondary" type="button" onclick="togglePassword('u-pass', this)">
+							<i class="bi bi-eye"></i>
+						</button>
+					</div>
+					<select id="u-role" class="form-select mb-2">
+						<option value="CASHIER">CASHIER</option>
+						<option value="MANAGER">MANAGER</option>
+					</select>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+					<button type="submit" class="btn btn-primary">Create User</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Modal: Edit User -->
+	<div class="modal fade" id="editUserModal" tabindex="-1">
+		<div class="modal-dialog">
+			<form id="edit-user-form" class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Edit User Account</h5>
+				</div>
+				<div class="modal-body">
+					<input type="hidden" id="edit-u-id">
+					<label class="form-label">Username</label>
+					<input type="text" id="edit-u-name" class="form-control mb-2" required>
+
+					<label class="form-label">Role</label>
+					<select id="edit-u-role" class="form-select mb-2">
+						<option value="CASHIER">CASHIER</option>
+						<option value="MANAGER">MANAGER</option>
+						<option value="ADMIN">ADMIN</option>
+					</select>
+
+					<label class="form-label">New Password (leave blank to keep current)</label>
+					<div class="input-group mb-2">
+						<input type="password" id="edit-u-pass" class="form-control" placeholder="New Password">
+						<button class="btn btn-outline-secondary" type="button" onclick="togglePassword('edit-u-pass', this)">
+							<i class="bi bi-eye"></i>
+						</button>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+					<button type="submit" class="btn btn-success">Update User</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div class="modal fade" id="saleDetailModal" tabindex="-1">
+		<div class="modal-dialog modal-sm">
+			<div class="modal-content">
+				<div class="modal-header border-0 pb-0">
+					<h5 class="modal-title w-100 text-center">SALE SLIP</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body pt-0" id="sale-slip-content">
+					<!-- Slip content will be injected here -->
+				</div>
+				<div class="modal-footer border-0 justify-content-center">
+					<button type="button" class="btn btn-primary btn-sm w-100" onclick="window.print()">
+						<i class="bi bi-printer"></i> Print Slip
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="../js/api.js"></script>
+	<script src="../js/utils.js"></script>
+	<script src="../js/inventory.js"></script>
+	<script src="../js/users.js"></script>
+	<script>
+		document.addEventListener('DOMContentLoaded', async () => {
+			try {
+				const result = await API.get('/auth/me');
+				const user = result.user;
+
+				// Update sidebar title based on role
+				const sidebarTitle = document.getElementById('sidebar-title');
+				if (sidebarTitle) {
+					sidebarTitle.innerText = user.role === 'ADMIN' ? 'POS Admin' : 'POS Manager';
+				}
+
+				if (user.role === 'MANAGER') {
+					const usersTab = document.getElementById('users-tab');
+					if (usersTab) usersTab.parentElement.remove();
+
+					if (window.location.hash === '#users') {
+						bootstrap.Tab.getInstance(document.getElementById('inventory-tab')).show();
+					}
+				}
+			} catch (err) {
+				console.error("Access check failed", err);
+			}
+		});
+
+		document.getElementById('logout-btn').addEventListener('click', async () => {
+			await API.post('/auth/logout');
+			window.location.href = '/';
+		});
+
+		// Sidebar Toggle Logic
+		document.getElementById('menu-toggle').addEventListener('click', () => {
+			document.getElementById('sidebar').classList.toggle('mini');
+		});
+	</script>
 </body>
+
 </html>

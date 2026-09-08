@@ -1,64 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>POS Terminal</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../css/styles.css" rel="stylesheet">
+	<meta charset="UTF-8">
+	<title>POS Terminal</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+	<link href="../css/styles.css" rel="stylesheet">
+	<link href="../css/pos-custom.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
+
 <body class="bg-light">
-    <nav class="navbar navbar-light bg-secondary mb-4">
-        <div class="container-fluid">
-            <span class="navbar-brand text-white">Cashier Terminal</span>
-            <button class="btn btn-outline-danger btn-sm text-white border-2" onclick="logout()">Logout</button>
-        </div>
-    </nav>
+	<nav class="navbar pos-header mb-3">
+		<div class="container-fluid">
+			<span class="navbar-brand text-white fw-bold" id="terminal-title">🛒 POS Terminal</span>
+			<div class="d-flex gap-2">
+				<a href="/admin" id="dashboard-link" class="btn btn-light btn-sm d-none fw-bold text-primary">Dashboard</a>
+				<button class="btn btn-outline-light btn-sm fw-bold" id="logout-btn">Logout</button>
+			</div>
+		</div>
+	</nav>
 
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Products -->
-            <div class="col-md-7">
-                <input type="text" id="search-input" class="form-control mb-3" placeholder="Search by name or barcode...">
-                <div class="row" id="product-list"></div>
-            </div>
-            
-            <!-- Product Cart -->
-            <div class="col-md-5">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">Current Sale</div>
-                    <div class="card-body cart-container">
-                        <table class="table">
-                            <thead>
-                                <tr><th>Item</th><th>Qty</th><th>Subtotal</th><th></th></tr>
-                            </thead>
-                            <tbody id="cart-body"></tbody>
-                        </table>
-                    </div>
-                    <div class="card-footer">
-                        <h4>Total: Rs.<span id="grand-total">0.00</span></h4>
-                        <button class="btn btn-secondary  w-100 btn-lg" onclick="checkout()">Confirm Sale</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div class="container-fluid px-4">
+		<div class="row">
+			<!-- Left Side: Products -->
+			<div class="col-md-8">
+				<div class="d-flex align-items-center gap-3 mb-3">
+					<div class="input-group flex-grow-1 shadow-sm rounded-pill overflow-hidden">
+						<span class="input-group-text border-0 bg-white"><i class="bi bi-search"></i></span>
+						<input type="text" id="search-input" class="form-control border-0 py-2"
+							placeholder="Search products or scan barcode...">
+					</div>
+				</div>
 
-    <!-- Receipt Modal -->
-    <div class="modal fade" id="receiptModal" tabindex="-1">
-    <div class="modal-dialog modal-sm"> <div class="modal-content">
-            <div class="modal-body p-4" id="receipt-body">
-                </div>
-            <div class="modal-footer border-0">
-                <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-success w-100" onclick="window.print()">Print Receipt</button>
-            </div>
-        </div>
-    </div>
-</div>
+				<div class="category-scroll mb-4" id="category-list">
+					<div class="category-pill active" onclick="filterByCategory('All')">All Items</div>
+					<!-- Categories will be here -->
+				</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../js/api.js"></script>
-    <script src="../js/pos.js"></script>
-    <script>async function logout() { await API.post('/auth/logout'); window.location.href = '/'; }</script>
+				<div class="row g-3" id="product-list" style="max-height: 65vh; overflow-y: auto; padding-right: 5px;">
+					<!-- Products will be  here -->
+				</div>
+			</div>
+
+			<!-- Right Side: Cart -->
+			<div class="col-md-4">
+				<div class="cart-card">
+					<div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+						<h5 class="mb-0 fw-bold">Current Sale</h5>
+						<span class="badge bg-primary rounded-pill" id="cart-count">0 items</span>
+					</div>
+
+					<div class="cart-items" id="cart-body">
+						<!-- Cart items will be here -->
+					</div>
+
+					<div class="total-section border-top">
+						<div class="mb-3">
+							<label class="form-label small fw-bold text-muted">Select Customer</label>
+							<div class="input-group input-group-sm shadow-sm rounded overflow-hidden">
+								<select id="customer-select" class="form-select border-0 bg-white">
+									<option value="1">Walk-in Customer</option>
+								</select>
+								<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCustomerModal">
+									<i class="bi bi-plus-lg"></i>
+								</button>
+							</div>
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label small fw-bold text-muted">Discount (%)</label>
+							<input type="number" id="discount-input" class="form-control form-control-sm border-0 shadow-sm bg-white"
+								placeholder="0" value="0" min="0" max="100">
+						</div>
+
+						<div class="d-flex justify-content-between mb-2">
+							<span class="text-muted">Subtotal</span>
+							<span class="fw-bold">Rs. <span id="subtotal">0.00</span></span>
+						</div>
+						<div class="d-flex justify-content-between mb-4">
+							<span class="h4 mb-0 fw-bold">Total</span>
+							<span class="h4 mb-0 fw-bold text-primary">Rs. <span id="grand-total">0.00</span></span>
+						</div>
+						<button class="checkout-btn w-100" onclick="checkout()">
+							<i class="bi bi-check-circle-fill me-2"></i> Confirm & Print
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal: Add Customer -->
+	<div class="modal fade" id="addCustomerModal" tabindex="-1">
+		<div class="modal-dialog">
+			<form id="add-customer-form" class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">New Customer</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body">
+					<input type="text" id="c-name" class="form-control mb-2" placeholder="Full Name" required>
+					<input type="text" id="c-phone" class="form-control mb-2" placeholder="Phone Number" required>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+					<button type="submit" class="btn btn-primary">Save Customer</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Receipt Modal -->
+	<div class="modal fade" id="receiptModal" tabindex="-1">
+		<div class="modal-dialog modal-sm">
+			<div class="modal-content">
+				<div class="modal-body p-4" id="receipt-body">
+				</div>
+				<div class="modal-footer border-0">
+					<button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-success w-100" onclick="window.print()">Print Receipt</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="../js/api.js"></script>
+	<script src="../js/utils.js"></script>
+	<script src="../js/pos.js"></script>
 </body>
-</html> 
+
+</html>

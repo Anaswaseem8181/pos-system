@@ -1,0 +1,16 @@
+const ROLES = {
+	ADMIN: 'ADMIN',
+	MANAGER: 'MANAGER',
+	CASHIER: 'CASHIER'
+};
+
+const APP_CONFIG = {
+	DEFAULT_LIMIT: 50,
+	LOW_STOCK_THRESHOLD: 10,
+	CURRENCY: 'Rs.'
+};
+
+module.exports = {
+	ROLES,
+	APP_CONFIG
+};
