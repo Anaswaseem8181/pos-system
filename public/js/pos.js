@@ -141,7 +141,7 @@ function addToCart(productId) {
 		if (existing.cartQuantity < product.quantity) {
 			existing.cartQuantity++;
 		} else {
-			alert('Maximum stock reached');
+			API.showToast('Maximum stock limit reached', 'error');
 		}
 	} else {
 		cart.push({ ...product, cartQuantity: 1 });
@@ -149,16 +149,16 @@ function addToCart(productId) {
 	renderCart();
 }
 
-
 window.updateQty = function (index, delta) {
 	const item = cart[index];
+	if (!item) return;
 	const product = products.find(p => p.id === item.id);
 
 	if (delta > 0) {
 		if (item.cartQuantity < product.quantity) {
 			item.cartQuantity++;
 		} else {
-			alert("No more stock available");
+			API.showToast('Maximum stock limit reached', 'error');
 		}
 	} else {
 		if (item.cartQuantity > 1) {
@@ -168,6 +168,25 @@ window.updateQty = function (index, delta) {
 			return;
 		}
 	}
+	renderCart();
+};
+
+window.setQtyDirect = function (index, val) {
+	const item = cart[index];
+	if (!item) return;
+
+	let newQty = parseInt(val, 10);
+	const product = products.find(p => p.id === item.id);
+	const maxQty = product ? product.quantity : item.cartQuantity;
+
+	if (isNaN(newQty) || newQty <= 0) {
+		newQty = 1;
+	} else if (newQty > maxQty) {
+		API.showToast(`Only ${maxQty} items available in stock`, 'error');
+		newQty = maxQty;
+	}
+
+	item.cartQuantity = newQty;
 	renderCart();
 };
 
@@ -185,19 +204,28 @@ function renderCart() {
 		const itemSubtotal = item.price * item.cartQuantity;
 		subtotal += itemSubtotal;
 		itemCount += item.cartQuantity;
+		const product = products.find(p => p.id === item.id);
+		const maxQty = product ? product.quantity : item.cartQuantity;
+
 		return `
             <div class="cart-item">
                 <div class="flex-grow-1">
                     <div class="fw-bold">${item.name}</div>
                     <small class="text-muted">Rs. ${item.price.toLocaleString()} x ${item.cartQuantity}</small>
                 </div>
-                <div class="d-flex align-items-center gap-2">
-                    <div class="btn-group btn-group-sm shadow-sm">
-                        <button class="btn btn-light border" onclick="updateQty(${index}, -1)">-</button>
-                        <span class="btn btn-light border disabled fw-bold" style="min-width:35px">${item.cartQuantity}</span>
-                        <button class="btn btn-light border" onclick="updateQty(${index}, 1)">+</button>
+                <div class="d-flex align-items-center gap-1">
+                    <div class="d-flex align-items-center border rounded shadow-sm overflow-hidden bg-light" style="height: 32px;">
+                        <button class="btn btn-sm btn-light border-0 px-2 h-100" onclick="updateQty(${index}, -1)">-</button>
+                        <input type="number" 
+                               class="form-control form-control-sm text-center border-0 fw-bold px-1 cart-qty-input h-100" 
+                               value="${item.cartQuantity}" 
+                               min="1" 
+                               max="${maxQty}"
+                               onchange="setQtyDirect(${index}, this.value)"
+                               onkeydown="if(event.key==='Enter') this.blur();">
+                        <button class="btn btn-sm btn-light border-0 px-2 h-100" onclick="updateQty(${index}, 1)">+</button>
                     </div>
-                    <button class="btn btn-sm text-danger px-1" onclick="removeFromCart(${index})">
+                    <button class="btn btn-sm text-danger px-1 ms-1" onclick="removeFromCart(${index})" title="Remove item">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
