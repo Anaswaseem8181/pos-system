@@ -437,8 +437,10 @@
 	<script>
 		document.addEventListener('DOMContentLoaded', async () => {
 			try {
-				const result = await API.get('/auth/me');
+				const result = await API.get('/api/auth/me');
 				const user = result.user;
+
+				if (!user) { window.location.href = '/'; return; }
 
 				// Update sidebar title based on role
 				const sidebarTitle = document.getElementById('sidebar-title');
@@ -446,21 +448,19 @@
 					sidebarTitle.innerText = user.role === 'ADMIN' ? 'POS Admin' : 'POS Manager';
 				}
 
+				// Hide Users tab from Manager
 				if (user.role === 'MANAGER') {
-					const usersTab = document.getElementById('users-tab');
-					if (usersTab) usersTab.parentElement.remove();
-
-					if (window.location.hash === '#users') {
-						bootstrap.Tab.getInstance(document.getElementById('inventory-tab')).show();
-					}
+					const usersTabLi = document.getElementById('users-tab')?.parentElement;
+					if (usersTabLi) usersTabLi.remove();
 				}
 			} catch (err) {
 				console.error("Access check failed", err);
+				window.location.href = '/';
 			}
 		});
 
 		document.getElementById('logout-btn').addEventListener('click', async () => {
-			await API.post('/auth/logout');
+			await API.post('/api/auth/logout');
 			window.location.href = '/';
 		});
 

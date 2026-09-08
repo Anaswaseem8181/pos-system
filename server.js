@@ -28,10 +28,24 @@ app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/customers', require('./routes/customerRoutes'));
 app.use('/api/categories', require('./routes/categoryRoutes'));
 
-// Serve HTML
+// Serve HTML with server-side route guards
+const { isAuthenticated, isAdmin } = require('./middleware/authMiddleware');
+
+const redirectToLogin = (req, res) => res.redirect('/');
+
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public/views/login.html')));
-app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public/views/admin-dashboard.html')));
-app.get('/pos', (req, res) => res.sendFile(path.join(__dirname, 'public/views/pos.html')));
+
+app.get('/admin', (req, res) => {
+    if (!req.session.user) return res.redirect('/');
+    const role = req.session.user.role;
+    if (role !== 'ADMIN' && role !== 'MANAGER') return res.redirect('/pos');
+    res.sendFile(path.join(__dirname, 'public/views/admin-dashboard.html'));
+});
+
+app.get('/pos', (req, res) => {
+    if (!req.session.user) return redirectToLogin(req, res);
+    res.sendFile(path.join(__dirname, 'public/views/pos.html'));
+});
 
 app.use(errorHandler);
 
